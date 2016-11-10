@@ -90,6 +90,53 @@ int negamax(state_t state, int depth, int color, bool use_tt) {
     return alpha;
 }
 
+int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt) {
+    int val;
+    if (depth == 0 or state.terminal()){
+        return color*state.value();
+    }
+
+    int score = numeric_limits<int>::min(); 
+    for( int pos = 0; pos < DIM; ++pos ) {
+        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
+            val = max( alpha, -negamax(state.move(color, pos), depth, alpha, beta, color) );
+            score = max(score,val);
+            alpha = max(alpha,val);
+            if (alpha>=beta) {
+                break;
+            }
+        }
+    }
+
+    return score;
+}
+
+int scout(state_t state, int depth, int color, bool use_tt) {
+    if (depth == 0 or state.terminal()){
+        return color*state.value();
+    }
+    int score = 0;
+    bool first_child = true;
+
+    for( int pos = 0; pos < DIM; ++pos ) {
+        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
+            if (first_child) {
+                score = scout(state.move(color,pos), depth-1, -color);
+            } else {
+                if () {
+                    
+                }
+            }
+
+        }
+    }
+
+
+
+
+
+}
+
 int main(int argc, const char **argv) {
     state_t pv[128];
     int npv = 0;
@@ -150,7 +197,7 @@ int main(int argc, const char **argv) {
             } else if( algorithm == 1 ) {
                 value = negamax(pv[i], 0, color, use_tt);
             } else if( algorithm == 2 ) {
-                //value = negamax(pv[i], 0, -200, 200, color, use_tt);
+                value = negamax(pv[i], 0, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
                 //value = scout(pv[i], 0, color, use_tt);
             } else if( algorithm == 4 ) {
