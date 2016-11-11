@@ -50,6 +50,7 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     - color == -1 se refiere a fichas blancas.
 */
 int minmax(state_t state, int depth, bool use_tt) {
+    generated++;
 
     if (depth == 0 || state.terminal()) return state.value();
 
@@ -58,7 +59,6 @@ int minmax(state_t state, int depth, bool use_tt) {
 
     for (int pos = 0; pos < DIM; pos++) {
         if (state.is_white_move(pos)) { 
-            generated++;
             score = min(score, maxmin(state.white_move(pos), depth--));
         }
     }
@@ -66,6 +66,7 @@ int minmax(state_t state, int depth, bool use_tt) {
 }
 
 int maxmin(state_t state, int depth, bool use_tt) {
+    generated++;
 
     if (depth == 0 || state.terminal()) return state.value();
 
@@ -74,7 +75,6 @@ int maxmin(state_t state, int depth, bool use_tt) {
 
     for (int pos = 0; pos < DIM; pos++) {
         if (state.is_black_move(pos)) {
-            generated++;
             score = max(score, minmax(state.black_move(pos), depth--));
         }
     }
@@ -82,6 +82,7 @@ int maxmin(state_t state, int depth, bool use_tt) {
 }
 
 int negamax(state_t state, int depth, int color, bool use_tt) {
+    generated++;
 
     if (depth == 0 || state.terminal()) return color*state.value();
 
@@ -90,7 +91,6 @@ int negamax(state_t state, int depth, int color, bool use_tt) {
 
     for (int pos = 0; pos < DIM; pos++) {
         if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            generated++;
             alpha = max(alpha, -negamax(state.move(color, pos), -color, depth--));
         }
     }
@@ -98,6 +98,7 @@ int negamax(state_t state, int depth, int color, bool use_tt) {
 }
 
 int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt) {
+    generated++;
     int val;
     if (depth == 0 || state.terminal()) return color*state.value();
 
@@ -105,7 +106,7 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
     int score = numeric_limits<int>::min(); 
     for (int pos = 0; pos < DIM; pos++) {
         if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            generated++;
+            
 
             val = -negamax(state.move(color, pos), depth--, -alpha, -beta, -color);
             score = max(score,val);
@@ -118,14 +119,13 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 }
 
 int test(state_t state, int depth, int score, int color,function<bool(int,int)> func){
+    generated++;
 
     if (depth == 0 || state.terminal()) return func(state.value(),score);
     expanded++;
     
     for (int pos = 0; pos < DIM; pos++) {
         if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            generated++;
-
             if (color == 1 && test(state.move(color,pos),depth--,score,-color,greater<int>())) return true;
             if (color == -1 && test(state.move(color,pos),depth--,score,-color,greater_equal<int>())) return false;
         }
@@ -134,6 +134,7 @@ int test(state_t state, int depth, int score, int color,function<bool(int,int)> 
 }
 
 int scout(state_t state, int depth, int color, bool use_tt) {
+    generated++;
     if (depth == 0 || state.terminal()) return color*state.value();
     expanded++;
 
@@ -142,7 +143,6 @@ int scout(state_t state, int depth, int color, bool use_tt) {
 
     for (int pos = 0; pos < DIM; pos++) {
         if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            generated++;
             if (first_child) {
                 score = scout(state.move(color,pos), depth--, -color);
                 first_child = false;
@@ -160,7 +160,7 @@ int scout(state_t state, int depth, int color, bool use_tt) {
 }
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
-
+    generated++;
     if (depth == 0 || state.terminal()) return color*state.value();
     expanded++;
 
@@ -168,7 +168,6 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     int score;
     for (int pos = 0; pos < DIM; pos++) {
         if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            generated++;
             if (first_child) {
                 score = -negascout(state.move(color,pos),depth--,-beta,-alpha,-color);
             } else {
@@ -236,22 +235,20 @@ int main(int argc, const char **argv) {
         TTable[1].clear();
         float start_time = Utils::read_time_in_seconds();
         expanded = 0;
-        generated = 1; //uno por la raiz
+        generated = 0; 
         int color = i % 2 == 1 ? 1 : -1;
-
-        // NOTA: puse como profundidad i, hay que averiguar cual debe ser el valor
 
         try {
             if( algorithm == 0 ) {
-                value = color * (color == 1 ? maxmin(pv[i], i, use_tt) : minmax(pv[i], i, use_tt));
+                value = color * (color == 1 ? maxmin(pv[i], 0, use_tt) : minmax(pv[i], 0, use_tt));
             } else if( algorithm == 1 ) {
-                value = negamax(pv[i], i, color, use_tt);
+                value = negamax(pv[i], 0, color, use_tt);
             } else if( algorithm == 2 ) {
-                value = negamax(pv[i], i, -200, 200, color, use_tt);
+                value = negamax(pv[i], 0, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
-                value = scout(pv[i], i, color, use_tt);
+                value = scout(pv[i], 0, color, use_tt);
             } else if( algorithm == 4 ) {
-                value = negascout(pv[i], i, -200, 200, color, use_tt);
+                value = negascout(pv[i], 0, -200, 200, color, use_tt);
             }
         } catch( const bad_alloc &e ) {
             cout << "size TT[0]: size=" << TTable[0].size() << ", #buckets=" << TTable[0].bucket_count() << endl;
