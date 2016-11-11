@@ -1,0 +1,37 @@
+Extracting principal variation (PV) with 33 plays ... done!
+Algorithm: Negamax (alpha-beta version)
+Moving along PV:
+34. White moves: value=-4, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+33. Black moves: value=-7, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+32. White moves: value=8, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+31. Black moves: value=8, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+30. White moves: value=13, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+29. Black moves: value=6, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+28. White moves: value=11, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+27. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+26. White moves: value=3, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+25. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+24. White moves: value=5, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+23. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+22. White moves: value=7, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+21. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+20. White moves: value=7, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+19. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+18. White moves: value=5, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+17. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+16. White moves: value=7, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+15. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+14. White moves: value=7, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+13. Black moves: value=2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+12. White moves: value=9, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+11. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+10. White moves: value=5, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+9. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+8. White moves: value=5, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+7. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+6. White moves: value=3, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+5. Black moves: value=-2, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+4. White moves: value=3, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+3. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+2. White moves: value=3, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
+1. Black moves: value=0, #expanded=0, #generated=0, seconds=0, #generated/second=-nan
