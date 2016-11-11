@@ -245,8 +245,9 @@ inline void state_t::set_color(bool color, int pos) {
 
 inline state_t state_t::move(bool color, int pos) const {
     state_t s(*this);
-    if( pos >= DIM ) return s;
-
+    if( pos >= DIM ){
+        return s;
+    }
     assert(outflank(color, pos));
     s.set_color(color, pos);
 

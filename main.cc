@@ -46,113 +46,174 @@ int scout(state_t state, int depth, int color, bool use_tt = false);
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false);
 
 /* Implementacion de los algoritmos requeridos.
-    - color == 1 se refiere a fichas negras.
-    - color == -1 se refiere a fichas blancas.
+    - color == 1 se refiere a fichas negras (MAX node).
+    - color == -1 se refiere a fichas blancas (MIN node).
 */
 int minmax(state_t state, int depth, bool use_tt) {
     generated++;
-
-    if (depth == 0 || state.terminal()) return state.value();
+    if (state.terminal()) return state.value();
 
     expanded++;
     int score = numeric_limits<int>::max();
-
-    for (int pos = 0; pos < DIM; pos++) {
-        if (state.is_white_move(pos)) { 
-            score = min(score, maxmin(state.white_move(pos), depth--));
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if (state.is_white_move(move)) {
+            valid_moves.push_back(move);
         }
+    }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+
+    state_t child;
+    for (int pos : valid_moves) {
+        child = state.white_move(pos);
+        score = min(score,maxmin(child,depth--));
     }
     return score;
 }
 
 int maxmin(state_t state, int depth, bool use_tt) {
     generated++;
-
-    if (depth == 0 || state.terminal()) return state.value();
+    if (state.terminal()) return state.value();
 
     expanded++;
     int score = numeric_limits<int>::min();
-
-    for (int pos = 0; pos < DIM; pos++) {
-        if (state.is_black_move(pos)) {
-            score = max(score, minmax(state.black_move(pos), depth--));
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if (state.is_black_move(move)) {
+            valid_moves.push_back(move);
         }
+    }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+
+    state_t child;
+    for (int pos : valid_moves) {
+        child = state.black_move(pos);
+        score = max(score, minmax(child, depth--));
     }
     return score;
 }
 
 int negamax(state_t state, int depth, int color, bool use_tt) {
     generated++;
-
-    if (depth == 0 || state.terminal()) return color*state.value();
+    
+    if (state.terminal()) return color*state.value();
 
     expanded++;
     int alpha = numeric_limits<int>::min(); 
 
-    for (int pos = 0; pos < DIM; pos++) {
-        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            alpha = max(alpha, -negamax(state.move(color, pos), -color, depth--));
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
+            valid_moves.push_back(move);
         }
     }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+
+    state_t child;
+    for (int pos : valid_moves) {
+        child = color == 1 ? state.black_move(pos):state.white_move(pos);
+        alpha = max(alpha, -negamax(child, depth--, -color));
+    }
+    
     return alpha;
 }
 
 int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt) {
     generated++;
     int val;
-    if (depth == 0 || state.terminal()) return color*state.value();
+    if (state.terminal()) return color*state.value();
 
     expanded++;
-    int score = numeric_limits<int>::min(); 
-    for (int pos = 0; pos < DIM; pos++) {
-        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            
-
-            val = -negamax(state.move(color, pos), depth--, -alpha, -beta, -color);
-            score = max(score,val);
-            alpha = max(alpha,val);
-            
-            if (alpha>=beta) break;
+    int score = numeric_limits<int>::min();
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
+            valid_moves.push_back(move);
         }
+    }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+
+    state_t child;
+    for (int pos : valid_moves) {
+        child = color == 1 ? state.black_move(pos):state.white_move(pos);
+        val = -negamax(child, depth--, -beta, -alpha, -color);
+        score = max(score,val);
+        alpha = max(alpha,val);
+            
+        if (alpha>=beta) break;
     }
     return score;
 }
 
-int test(state_t state, int depth, int score, int color,function<bool(int,int)> func){
+bool test(state_t state, int depth, int score, int color,function<bool(int,int)> func){
+    bool pass = true;
     generated++;
 
-    if (depth == 0 || state.terminal()) return func(state.value(),score);
+    if (state.terminal()) return func(state.value(),score);
     expanded++;
-    
-    for (int pos = 0; pos < DIM; pos++) {
-        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            if (color == 1 && test(state.move(color,pos),depth--,score,-color,greater<int>())) return true;
-            if (color == -1 && test(state.move(color,pos),depth--,score,-color,greater_equal<int>())) return false;
+
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
+            valid_moves.push_back(move);
         }
     }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+    state_t child;
+    for (int pos : valid_moves) {
+        child = color == 1 ? state.black_move(pos):state.white_move(pos);
+        pass = false;
+        if (color == 1 && test(child,depth--,score,-color,greater<int>())) {
+           return true;
+        }
+        if (color == -1 && !test(child,depth--,score,-color,greater<int>())) {
+            return false;
+        }
+    }
+
+    if (pass) return test(state,depth--,score,-color,greater<int>());
     return color == 1 ? false : true;
 }
 
 int scout(state_t state, int depth, int color, bool use_tt) {
     generated++;
-    if (depth == 0 || state.terminal()) return color*state.value();
+    if (state.terminal()) return state.value(); 
     expanded++;
 
     int score = 0;
     bool first_child = true;
 
-    for (int pos = 0; pos < DIM; pos++) {
-        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            if (first_child) {
-                score = scout(state.move(color,pos), depth--, -color);
-                first_child = false;
-            } else {
-                if (color == 1 && test(state.move(color,pos),depth-1,score,-color,greater<int>())) {
-                    score = scout(state.move(color,pos),depth--, -color);
-                }
-                if (color == -1 && test(state.move(color,pos),depth-1,score,-color,greater_equal<int>())) {
-                    score = scout(state.move(color,pos),depth--, -color);
-                }
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
+            valid_moves.push_back(move);
+        }
+    }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+    state_t child;
+    for (int pos : valid_moves) {
+        child = color == 1 ? state.black_move(pos):state.white_move(pos);
+        if (first_child) {
+            score = scout(child, depth--, -color);
+            first_child = false;
+        } else {
+            if (color == 1 && test(child,depth--,score,-color,greater<int>())) {
+                score = scout(child,depth--, -color);
+            }
+            if (color == -1 && !test(child,depth--,score,-color,greater_equal<int>())) {
+                score = scout(child,depth--, -color);
             }
         }
     }
