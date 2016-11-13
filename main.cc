@@ -56,6 +56,7 @@ int minmax(state_t state, int depth, bool use_tt) {
     expanded++;
     int score = numeric_limits<int>::max();
     std::vector<int> valid_moves;
+    
     for (int move = 0; move < DIM; move++) {
         if (state.is_white_move(move)) {
             valid_moves.push_back(move);
@@ -64,7 +65,6 @@ int minmax(state_t state, int depth, bool use_tt) {
     if (valid_moves.empty()) {
         valid_moves.push_back(36);
     }
-
     state_t child;
     for (int pos : valid_moves) {
         child = state.white_move(pos);
@@ -75,11 +75,13 @@ int minmax(state_t state, int depth, bool use_tt) {
 
 int maxmin(state_t state, int depth, bool use_tt) {
     generated++;
+    
     if (state.terminal()) return state.value();
 
     expanded++;
     int score = numeric_limits<int>::min();
     std::vector<int> valid_moves;
+    
     for (int move = 0; move < DIM; move++) {
         if (state.is_black_move(move)) {
             valid_moves.push_back(move);
@@ -88,7 +90,6 @@ int maxmin(state_t state, int depth, bool use_tt) {
     if (valid_moves.empty()) {
         valid_moves.push_back(36);
     }
-
     state_t child;
     for (int pos : valid_moves) {
         child = state.black_move(pos);
@@ -104,8 +105,8 @@ int negamax(state_t state, int depth, int color, bool use_tt) {
 
     expanded++;
     int alpha = numeric_limits<int>::min(); 
-
     std::vector<int> valid_moves;
+
     for (int move = 0; move < DIM; move++) {
         if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
             valid_moves.push_back(move);
@@ -114,13 +115,11 @@ int negamax(state_t state, int depth, int color, bool use_tt) {
     if (valid_moves.empty()) {
         valid_moves.push_back(36);
     }
-
     state_t child;
     for (int pos : valid_moves) {
         child = color == 1 ? state.black_move(pos):state.white_move(pos);
         alpha = max(alpha, -negamax(child, depth--, -color));
     }
-    
     return alpha;
 }
 
@@ -154,7 +153,6 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 }
 
 bool test(state_t state, int depth, int score, int color,function<bool(int,int)> func){
-    bool pass = true;
     generated++;
 
     if (state.terminal()) return func(state.value(),score);
@@ -172,16 +170,12 @@ bool test(state_t state, int depth, int score, int color,function<bool(int,int)>
     state_t child;
     for (int pos : valid_moves) {
         child = color == 1 ? state.black_move(pos):state.white_move(pos);
-        pass = false;
         if (color == 1 && test(child,depth--,score,-color,greater<int>())) {
            return true;
-        }
-        if (color == -1 && !test(child,depth--,score,-color,greater<int>())) {
+        } else if (color == -1 && !test(child,depth--,score,-color,greater_equal<int>())) {
             return false;
         }
     }
-
-    if (pass) return test(state,depth--,score,-color,greater<int>());
     return color == 1 ? false : true;
 }
 
@@ -206,8 +200,8 @@ int scout(state_t state, int depth, int color, bool use_tt) {
     for (int pos : valid_moves) {
         child = color == 1 ? state.black_move(pos):state.white_move(pos);
         if (first_child) {
-            score = scout(child, depth--, -color);
             first_child = false;
+            score = scout(child, depth--, -color);
         } else {
             if (color == 1 && test(child,depth--,score,-color,greater<int>())) {
                 score = scout(child,depth--, -color);
@@ -222,25 +216,35 @@ int scout(state_t state, int depth, int color, bool use_tt) {
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
     generated++;
-    if (depth == 0 || state.terminal()) return color*state.value();
+    if (state.terminal()) return color*state.value();
     expanded++;
 
     bool first_child = true;
-    int score;
-    for (int pos = 0; pos < DIM; pos++) {
-        if ( (color && state.is_black_move(pos)) || (!color && state.is_white_move(pos)) ) {
-            if (first_child) {
-                score = -negascout(state.move(color,pos),depth--,-beta,-alpha,-color);
-            } else {
-                score = -negascout(state.move(color,pos),depth--,-alpha - 1,-alpha,-color);
-                if (score < beta && alpha < score){
-                    score = -negascout(state.move(color,pos), depth--, -beta,-score,-color);
-                    alpha = max(alpha,score);
-                    
-                    if (alpha>=beta) break;
-                }
+    int score=0;
+
+    std::vector<int> valid_moves;
+    for (int move = 0; move < DIM; move++) {
+        if ( (color == 1 && state.is_black_move(move)) || (color == -1 && state.is_white_move(move)) ){
+            valid_moves.push_back(move);
+        }
+    }
+    if (valid_moves.empty()) {
+        valid_moves.push_back(36);
+    }
+    state_t child;
+    for (int pos : valid_moves) {
+        child = color == 1 ? state.black_move(pos):state.white_move(pos);
+        if (first_child) {
+            score = -negascout(child,depth--,-beta,-alpha,-color);
+            first_child = false;
+        } else {
+            score = -negascout(child,depth--,-alpha - 1,-alpha,-color);
+            if (alpha < score && score < beta){
+                score = -negascout(child, depth--,-beta,-score,-color);
             }
         }
+        alpha = max(alpha,score);    
+        if (alpha>=beta) break;
     }
     return alpha;
 }
@@ -307,7 +311,7 @@ int main(int argc, const char **argv) {
             } else if( algorithm == 2 ) {
                 value = negamax(pv[i], 0, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
-                value = scout(pv[i], 0, color, use_tt);
+                value = scout(pv[i], 0, color, use_tt)*color;
             } else if( algorithm == 4 ) {
                 value = negascout(pv[i], 0, -200, 200, color, use_tt);
             }

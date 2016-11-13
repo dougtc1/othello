@@ -176,6 +176,7 @@ inline bool state_t::outflank(bool color, int pos) const {
 
     // Check rows
     const int *x = rows[pos - 4];
+
     while( *x != pos ) ++x;
     if( *(x+1) != -1 ) {
         for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
@@ -248,6 +249,7 @@ inline state_t state_t::move(bool color, int pos) const {
     if( pos >= DIM ){
         return s;
     }
+ 
     assert(outflank(color, pos));
     s.set_color(color, pos);
 
