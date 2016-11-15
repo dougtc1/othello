@@ -6,10 +6,10 @@ Negamax (alpha-beta version) 2.txt
 Scout                        3.txt
 Negascout                    4.txt
 
-Notamos que en Minmax-Maxmin y Negamax (minmax version), los resultados obtenidos son parecidos, solo difieren en el tiempo de corrida pero no es una diferencia relevante. Esto se debe a que Negamax es solo una forma distinta de escribir Minmax-Maxmin, el cual no presenta ninguna mejora. Ambas corridad llegaron al nivel 16. 
+Notamos que en Minmax-Maxmin y Negamax (minmax version), los resultados obtenidos son parecidos, solo difieren en el tiempo de corrida pero no es una diferencia relevante. Esto se debe a que Negamax es solo una forma distinta de escribir Minmax-Maxmin, el cual no presenta ninguna mejora. Ambas corridas llegaron al nivel 16. 
 
 Observamos que en la corrida de Negamax (alpha-beta version) si se presentó una mejora en cuanto a la cantidad de hijos que se genera, gracias al alpha-beta pruning. La disminución de nodos visitados, disminuyó el tiempo de corrida y permitió llegar 7 niveles más abajo en comparación con los anteriores, es decir, al nivel 9. 
 
-Para el caso de Scout, notamos que la se generan menos nodos. Sin embargo, la diferencia no es muy grande en comparación con Negamax (alpha-beta version), debido a que puede estar evaluando menos nodos que alpha-beta pero a su vez puede estar visitando nodos que fueron podados en el algoritmo anterior. Además, un mismo nodo puede estarse generando dos veces, en la corrida de TEST y en la de Scout. Este algoritmo alcanzó el nivel 8.
+Para el caso de Scout, notamos que se generan menos nodos. Sin embargo, la diferencia no es muy grande en comparación con Negamax (alpha-beta version), debido a que puede estar evaluando menos nodos que alpha-beta pero a su vez puede estar visitando nodos que fueron podados en el algoritmo anterior. Además, un mismo nodo puede estarse generando dos veces, en la corrida de TEST y en la de Scout. Este algoritmo alcanzó el nivel 8.
 
 Nuestro Negascout alcanzó el nivel 7. Gracias al uso de alpha-beta pruning, la cantidad de nodos visitados y el tiempo de corrida mejora en comparación con Scout. Por lo tanto, este es el mejor algoritmo, ya que presenta los mejores resultados.
