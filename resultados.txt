@@ -1,10 +1,26 @@
-Resultados después de correr por 10 horas:
+---------------------------------------------------------------------------
+Proyecto 2
+---------------------------------------------------------------------------
 
+---------------------------------------------------------------------------
+Estudiantes
+---------------------------------------------------------------------------
+Douglas Torres 11-11027
+Mauricio Salerno 12-10627
+Andrea Centeno 10-10138
+
+---------------------------------------------------------------------------
+Resultados después de correr por 10 horas
+---------------------------------------------------------------------------
 Minmax-Maxmin                0.txt
 Negamax (minmax version)     1.txt
 Negamax (alpha-beta version) 2.txt
 Scout                        3.txt
 Negascout                    4.txt
+
+---------------------------------------------------------------------------
+Conclusiones
+---------------------------------------------------------------------------
 
 Notamos que en Minmax-Maxmin y Negamax (minmax version), los resultados obtenidos son parecidos, solo difieren en el tiempo de corrida pero no es una diferencia relevante. Esto se debe a que Negamax es solo una forma distinta de escribir Minmax-Maxmin, el cual no presenta ninguna mejora. Ambas corridas llegaron al nivel 16. 
 
